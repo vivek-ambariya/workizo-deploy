@@ -1,0 +1,39 @@
+{% extends "emails/base.html" %}
+
+{% block email_content %}
+<p class="text">Your service booking has been successfully placed! We are currently searching for the nearest captain to assign to your request.</p>
+
+<table class="details-table">
+    <tr>
+        <th>Booking ID</th>
+        <td>#{{ booking_id }}</td>
+    </tr>
+    <tr>
+        <th>Tracking ID</th>
+        <td><strong>{{ tracking_id }}</strong></td>
+    </tr>
+    <tr>
+        <th>Service Category</th>
+        <td>{{ service_category }}</td>
+    </tr>
+    <tr>
+        <th>Service Address</th>
+        <td>{{ service_address }}</td>
+    </tr>
+    <tr>
+        <th>Booking Date</th>
+        <td>{{ booking_date }}</td>
+    </tr>
+    <tr>
+        <th>Payment Mode</th>
+        <td>{{ payment_mode }}</td>
+    </tr>
+    <tr>
+        <th>Current Status</th>
+        <td><span class="badge badge-info">{{ current_status }}</span></td>
+    </tr>
+</table>
+
+<p class="text">You can track the progress of your booking live on your WORKIZO dashboard. We will notify you as soon as a Captain is assigned to your job.</p>
+<p class="text">Thank you for choosing WORKIZO!</p>
+{% endblock %}

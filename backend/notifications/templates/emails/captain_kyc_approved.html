@@ -1,0 +1,19 @@
+{% extends "emails/base.html" %}
+
+{% block email_content %}
+<p class="text" style="font-size: 20px; font-weight: 700; color: #16A34A; margin-bottom: 20px;">Congratulations!</p>
+<p class="text">We are delighted to inform you that your WORKIZO captain profile and government KYC documents have been successfully verified and approved!</p>
+<p class="text">Your account has been fully verified. You can now log into your WORKIZO Captain Portal, toggle your online status to active, and start accepting customer bookings in your category.</p>
+
+<p class="text" style="font-size: 14px; background-color: #DEF7EC; border: 1px solid #31C48D; padding: 16px; border-radius: 8px; color: #03543F;">
+    <strong>Verification Status:</strong> <span class="badge badge-success">Approved / Verified</span><br>
+    <strong>Next Step:</strong> Log in, switch to "Online", and monitor incoming instant service requests.
+</p>
+
+<div class="btn-container">
+    <a href="http://localhost:5173/captain/dashboard" class="btn" style="background-color: #16A34A;">Go to Captain Dashboard</a>
+</div>
+
+<p class="text">Welcome to the team, and we wish you a highly successful journey ahead with WORKIZO!</p>
+<p class="text">Best regards,<br>The WORKIZO Captain Network</p>
+{% endblock %}

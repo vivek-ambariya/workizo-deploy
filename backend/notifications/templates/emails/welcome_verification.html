@@ -1,0 +1,19 @@
+{% extends "emails/base.html" %}
+
+{% block email_content %}
+<p class="text">Welcome to <strong>WORKIZO</strong>! We are thrilled to have you onboard. Get ready to experience top-tier on-demand home services with instant booking and tracking.</p>
+<p class="text">To complete your registration and verify your email address, please click the button below:</p>
+
+<div class="btn-container">
+    <a href="{{ verification_url }}" class="btn">Verify Email Address</a>
+</div>
+
+<p class="text" style="font-size: 13px; color: #6B7280; background-color: #F9FAFB; padding: 12px; border-left: 4px solid #1A73E8; border-radius: 4px;">
+    <strong>Important:</strong> This verification link is secure and will expire in {{ expire_hours }} hours. If you did not create a WORKIZO account, you can safely ignore this email.
+</p>
+
+<p class="text">If the button above does not work, copy and paste the following link into your browser:</p>
+<p class="text" style="word-break: break-all; font-size: 13px; color: #1A73E8;">{{ verification_url }}</p>
+
+<p class="text">Best regards,<br>The WORKIZO Team</p>
+{% endblock %}

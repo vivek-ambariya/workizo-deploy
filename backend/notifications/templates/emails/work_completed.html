@@ -1,0 +1,32 @@
+{% extends "emails/base.html" %}
+
+{% block email_content %}
+<p class="text">Great news! The service work has been completed by your Captain, and the invoice is now ready for your review and payment.</p>
+
+<table class="details-table">
+    <tr>
+        <th>Booking ID</th>
+        <td>#{{ booking_id }}</td>
+    </tr>
+    <tr>
+        <th>Booking Summary</th>
+        <td>{{ booking_summary }}</td>
+    </tr>
+    <tr>
+        <th>Bill Amount</th>
+        <td><strong>₹{{ bill_amount }}</strong></td>
+    </tr>
+    <tr>
+        <th>Payment Status</th>
+        <td><span class="badge badge-warning">{{ payment_status }}</span></td>
+    </tr>
+</table>
+
+<p class="text">Please log in to your dashboard to review, approve the invoice, and complete the payment.</p>
+
+<div class="btn-container">
+    <a href="{{ payment_url }}" class="btn">Approve & Pay Invoice</a>
+</div>
+
+<p class="text">Thank you for letting WORKIZO assist you!</p>
+{% endblock %}

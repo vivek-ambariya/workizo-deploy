@@ -1,0 +1,25 @@
+{% extends "emails/base.html" %}
+
+{% block email_content %}
+<p class="text">We would like to inform you that your assigned booking has been cancelled.</p>
+
+<table class="details-table">
+    <tr>
+        <th>Booking ID</th>
+        <td>#{{ booking_id }}</td>
+    </tr>
+    {% if cancellation_reason %}
+    <tr>
+        <th>Cancellation Reason</th>
+        <td>{{ cancellation_reason }}</td>
+    </tr>
+    {% endif %}
+    <tr>
+        <th>Status</th>
+        <td><span class="badge badge-error">Cancelled</span></td>
+    </tr>
+</table>
+
+<p class="text">Since the job has been cancelled, your schedule is now free. Switch your status to online in the Captain app to receive other instant booking requests.</p>
+<p class="text">Regards,<br>The WORKIZO Captain Support Team</p>
+{% endblock %}

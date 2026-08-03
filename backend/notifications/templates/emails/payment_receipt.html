@@ -1,0 +1,31 @@
+{% extends "emails/base.html" %}
+
+{% block email_content %}
+<p class="text">Thank you for your payment! Your transaction was successful, and this email serves as your official payment receipt.</p>
+
+<table class="details-table">
+    <tr>
+        <th>Booking ID</th>
+        <td>#{{ booking_id }}</td>
+    </tr>
+    <tr>
+        <th>Invoice Number</th>
+        <td>#INV-{{ invoice_number }}</td>
+    </tr>
+    <tr>
+        <th>Amount Paid</th>
+        <td><strong>₹{{ amount_paid }}</strong></td>
+    </tr>
+    <tr>
+        <th>Payment Method</th>
+        <td>{{ payment_method }}</td>
+    </tr>
+    <tr>
+        <th>Transaction ID</th>
+        <td><code style="font-size: 13px; color: #111827; background-color: #F3F4F6; padding: 2px 6px; border-radius: 4px;">{{ transaction_id }}</code></td>
+    </tr>
+</table>
+
+<p class="text">The detailed invoice and service report can be downloaded directly from your customer dashboard.</p>
+<p class="text">We look forward to serving you again!</p>
+{% endblock %}

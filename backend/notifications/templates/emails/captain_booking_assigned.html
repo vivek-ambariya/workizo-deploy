@@ -1,0 +1,38 @@
+{% extends "emails/base.html" %}
+
+{% block email_content %}
+<p class="text">Congratulations! You have successfully accepted a new job request. Here are the booking details and customer contact information:</p>
+
+<table class="details-table">
+    <tr>
+        <th>Booking ID</th>
+        <td>#{{ booking_id }}</td>
+    </tr>
+    <tr>
+        <th>Customer Name</th>
+        <td>{{ customer_name }}</td>
+    </tr>
+    <tr>
+        <th>Customer Phone</th>
+        <td><a href="tel:{{ customer_phone }}" style="color: #1A73E8; text-decoration: none; font-weight: 600;">{{ customer_phone }}</a></td>
+    </tr>
+    <tr>
+        <th>Service Category</th>
+        <td>{{ service_category }}</td>
+    </tr>
+    <tr>
+        <th>Service Address</th>
+        <td>{{ service_address }}</td>
+    </tr>
+    <tr>
+        <th>Current Status</th>
+        <td><span class="badge badge-info">{{ current_status }}</span></td>
+    </tr>
+</table>
+
+<p class="text">Please navigate to the customer's address to start the work. Once you arrive at the location, verify the customer check-in QR code on your Captain app to start the repair job.</p>
+
+<div class="btn-container">
+    <a href="http://localhost:5173/captain/dashboard" class="btn">View Job on Portal</a>
+</div>
+{% endblock %}

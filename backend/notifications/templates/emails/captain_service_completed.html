@@ -1,0 +1,32 @@
+{% extends "emails/base.html" %}
+
+{% block email_content %}
+<p class="text">Job completed successfully! Here is a summary of the service details:</p>
+
+<table class="details-table">
+    <tr>
+        <th>Booking ID</th>
+        <td>#{{ booking_id }}</td>
+    </tr>
+    <tr>
+        <th>Customer Name</th>
+        <td>{{ customer_name }}</td>
+    </tr>
+    <tr>
+        <th>Completion Time</th>
+        <td>{{ completion_time }}</td>
+    </tr>
+    <tr>
+        <th>Earning Status</th>
+        <td><span class="badge badge-success">Deposited to Wallet</span></td>
+    </tr>
+</table>
+
+<p class="text">Your payout shares (90% of the total service invoice amount) have been successfully deposited directly into your WORKIZO captain wallet. You can check transaction records or request settlements inside the wallet tab.</p>
+
+<div class="btn-container">
+    <a href="http://localhost:5173/captain/dashboard" class="btn">View Wallet Details</a>
+</div>
+
+<p class="text">Thank you for your excellent service and hard work!</p>
+{% endblock %}

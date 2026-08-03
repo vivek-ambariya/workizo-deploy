@@ -1,0 +1,19 @@
+{% extends "emails/base.html" %}
+
+{% block email_content %}
+<p class="text">Work has officially started on your booking!</p>
+<p class="text">Your assigned Captain, <strong>{{ captain_name }}</strong>, has verified check-in details and is now executing the repair/service.</p>
+
+<table class="details-table">
+    <tr>
+        <th>Booking ID</th>
+        <td>#{{ booking_id }}</td>
+    </tr>
+    <tr>
+        <th>Current Status</th>
+        <td><span class="badge badge-info">Repair In Progress</span></td>
+    </tr>
+</table>
+
+<p class="text">You will receive another update along with the billing invoice once the Captain wraps up the work. Thank you for your cooperation.</p>
+{% endblock %}

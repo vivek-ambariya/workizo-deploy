@@ -1,0 +1,21 @@
+{% extends "emails/base.html" %}
+
+{% block email_content %}
+<p class="text">Your assigned Captain, <strong>{{ captain_name }}</strong>, has arrived at your service address.</p>
+<p class="text">Please meet the Captain and verify their identity. To initiate the service, show the Captain the secure QR check-in code available on your dashboard.</p>
+
+<table class="details-table">
+    <tr>
+        <th>Booking ID</th>
+        <td>#{{ booking_id }}</td>
+    </tr>
+    <tr>
+        <th>Current Status</th>
+        <td><span class="badge badge-success">Captain Arrived</span></td>
+    </tr>
+</table>
+
+<p class="text" style="font-size: 13px; color: #6B7280; background-color: #F3F4F6; padding: 12px; border-radius: 6px;">
+    <strong>Security Tip:</strong> Verify that the Captain at your door matches the photo and details in your WORKIZO customer dashboard before sharing check-in details.
+</p>
+{% endblock %}

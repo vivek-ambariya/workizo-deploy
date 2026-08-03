@@ -1,0 +1,23 @@
+{% extends "emails/base.html" %}
+
+{% block email_content %}
+<p class="text">We have completed reviewing your submitted verification details and KYC documents, and unfortunately, we could not approve your account at this time.</p>
+
+<div style="background-color: #FDF8F6; border: 1px solid #F3F4F6; border-left: 4px solid #F05252; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
+    <h3 style="margin-top: 0; color: #9B1C1C; font-size: 16px;">Rejection Details</h3>
+    {% if rejection_reason %}
+        <p style="margin: 8px 0 0 0; font-size: 14px; color: #7F1D1D; line-height: 1.5;">{{ rejection_reason }}</p>
+    {% else %}
+        <p style="margin: 8px 0 0 0; font-size: 14px; color: #7F1D1D; line-height: 1.5;">Uploaded identification documents were blur, unclear, or did not match the profile details.</p>
+    {% endif %}
+</div>
+
+<p class="text">To start receiving customer bookings, please log back into your Captain Portal and resubmit clear, valid verification details and documents.</p>
+
+<div class="btn-container">
+    <a href="http://localhost:5173/captain/dashboard" class="btn" style="background-color: #E02424;">Resubmit Verification Details</a>
+</div>
+
+<p class="text">If you have any questions or require assistance, please contact our support team.</p>
+<p class="text">Regards,<br>The WORKIZO Captain Onboarding Team</p>
+{% endblock %}

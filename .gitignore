@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+venv/
+env/
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local files & system files
+.DS_Store
+Thumbs.db
+test_files/
+dist/
+.vite/
+
+# IDE / Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Media uploads & static build files
+backend/media/
+backend/staticfiles/
+

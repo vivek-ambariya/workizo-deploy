@@ -1,0 +1,15 @@
+{% extends "emails/base.html" %}
+
+{% block email_content %}
+<p class="text">Thank you for submitting your verification details and documents on the WORKIZO platform.</p>
+<p class="text">We have successfully received your KYC (Know Your Customer) verification documents (including government identification proofs). Our admin team is currently reviewing them to verify your profile credentials.</p>
+
+<p class="text" style="font-size: 14px; background-color: #F8FAFC; border: 1px solid #E5E7EB; padding: 16px; border-radius: 8px; color: #4B5563;">
+    <strong>Verification Status:</strong> <span class="badge badge-warning">Under Review</span><br>
+    <strong>Estimated Time:</strong> Typically reviewed within 24-48 business hours.
+</p>
+
+<p class="text">We will send you an email update as soon as the review process is complete. Once approved, you can toggle your online status and start receiving customer service bookings!</p>
+
+<p class="text">Thank you for your patience,<br>The WORKIZO Captain Onboarding Team</p>
+{% endblock %}

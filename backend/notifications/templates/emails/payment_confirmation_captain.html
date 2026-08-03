@@ -1,0 +1,45 @@
+{% extends "emails/base.html" %}
+
+{% block email_content %}
+<p class="text">Hello {{ user_name }},</p>
+<p class="text">Great news! The payment for Booking <strong>#{{ booking_id }}</strong> has been successfully received and processed.</p>
+
+<table class="details-table" style="width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 15px;">
+    <tr style="border-bottom: 1px solid #E5E7EB;">
+        <th style="text-align: left; padding: 8px; color: #4B5563;">Booking ID</th>
+        <td style="padding: 8px; color: #111827; font-weight: 600;">#{{ booking_id }}</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E5E7EB;">
+        <th style="text-align: left; padding: 8px; color: #4B5563;">Customer Name</th>
+        <td style="padding: 8px; color: #111827;">{{ customer_name }}</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E5E7EB;">
+        <th style="text-align: left; padding: 8px; color: #4B5563;">Amount Paid</th>
+        <td style="padding: 8px; color: #16A34A; font-weight: 700;">₹{{ amount_paid }}</td>
+    </tr>
+    <tr style="border-bottom: 1px solid #E5E7EB;">
+        <th style="text-align: left; padding: 8px; color: #4B5563;">Payment Method</th>
+        <td style="padding: 8px; color: #111827;">{{ payment_method }}</td>
+    </tr>
+    {% if transaction_id %}
+    <tr style="border-bottom: 1px solid #E5E7EB;">
+        <th style="text-align: left; padding: 8px; color: #4B5563;">Transaction ID</th>
+        <td style="padding: 8px; color: #111827;"><code style="font-size: 13px; color: #111827; background-color: #F3F4F6; padding: 2px 6px; border-radius: 4px;">{{ transaction_id }}</code></td>
+    </tr>
+    {% endif %}
+    {% if payment_time %}
+    <tr style="border-bottom: 1px solid #E5E7EB;">
+        <th style="text-align: left; padding: 8px; color: #4B5563;">Payment Time</th>
+        <td style="padding: 8px; color: #111827;">{{ payment_time }}</td>
+    </tr>
+    {% endif %}
+</table>
+
+<p class="text">Your payout shares (90% of the total service invoice amount) have been successfully deposited directly into your WORKIZO captain wallet. You can check the transaction history or request a settlement in the wallet tab inside the captain portal.</p>
+
+<div class="btn-container" style="text-align: center; margin-top: 25px; margin-bottom: 25px;">
+    <a href="http://localhost:5173/captain/dashboard" class="btn" style="background-color: #0F0F14; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">View Wallet Details</a>
+</div>
+
+<p class="text">Thank you for your excellent service and hard work!</p>
+{% endblock %}

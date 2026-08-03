@@ -1,0 +1,36 @@
+{% extends "emails/base.html" %}
+
+{% block email_content %}
+<p class="text">Great news! A professional Captain has accepted your booking and is now assigned to your job.</p>
+
+<div style="background-color: #F8FAFC; border: 1px solid #E5E7EB; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+    <h3 style="margin-top: 0; color: #0F0F14; font-size: 16px;">Assigned Captain Details</h3>
+    <table style="width: 100%; font-size: 14px; border-collapse: collapse;">
+        <tr>
+            <td style="padding: 6px 0; color: #6B7280; width: 35%;"><strong>Captain Name:</strong></td>
+            <td style="padding: 6px 0; color: #1F2937; font-weight: 600;">{{ captain_name }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 6px 0; color: #6B7280;"><strong>Phone Number:</strong></td>
+            <td style="padding: 6px 0; color: #1F2937;"><a href="tel:{{ captain_phone }}" style="color: #1A73E8; text-decoration: none; font-weight: 600;">{{ captain_phone }}</a></td>
+        </tr>
+    </table>
+</div>
+
+<table class="details-table">
+    <tr>
+        <th>Booking ID</th>
+        <td>#{{ booking_id }}</td>
+    </tr>
+    <tr>
+        <th>Service Category</th>
+        <td>{{ service_category }}</td>
+    </tr>
+    <tr>
+        <th>Current Status</th>
+        <td><span class="badge badge-success">{{ current_status }}</span></td>
+    </tr>
+</table>
+
+<p class="text">The Captain will head to your service address shortly. You can track their location live on your dashboard.</p>
+{% endblock %}

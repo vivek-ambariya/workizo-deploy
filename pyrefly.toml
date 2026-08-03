@@ -1,0 +1,10 @@
+python-interpreter-path = "backend/venv/bin/python"
+search-path = ["backend"]
+
+[errors]
+missing-attribute = false
+bad-argument-type = false
+bad-assignment = false
+no-matching-overload = false
+bad-override-param-name = false
+unsupported-operation = false
