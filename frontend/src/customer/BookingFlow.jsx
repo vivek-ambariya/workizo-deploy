@@ -73,8 +73,23 @@ function BookingFlow() {
       navigate('/customer/dashboard', { state: { openBookingId: res.data.id } });
     } catch (err) {
       console.error(err);
-      const detail = err.response?.data?.detail || 'Failed to place booking';
-      toast.error(detail);
+      let errorMsg = 'Failed to place booking';
+      if (err.response?.data) {
+        const d = err.response.data;
+        if (typeof d === 'string') {
+          errorMsg = d;
+        } else if (d.detail) {
+          errorMsg = d.detail;
+        } else if (typeof d === 'object') {
+          const entries = Object.entries(d);
+          if (entries.length > 0) {
+            const [key, val] = entries[0];
+            const msg = Array.isArray(val) ? val[0] : val;
+            errorMsg = `${key}: ${msg}`;
+          }
+        }
+      }
+      toast.error(errorMsg);
     } finally {
       setSubmitting(false);
     }

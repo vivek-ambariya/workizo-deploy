@@ -1,3 +1,4 @@
+import logging
 from rest_framework import viewsets, permissions, status
 from rest_framework.views import APIView
 from rest_framework.decorators import action
@@ -6,6 +7,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+
+logger = logging.getLogger(__name__)
 
 from .models import Booking, RepairToken, MajorRepairApproval, BookingRejection, ChatMessage
 from .serializers import BookingSerializer, RepairTokenSerializer, MajorRepairApprovalSerializer, PublicBookingSerializer, ChatMessageSerializer
@@ -79,68 +82,76 @@ class BookingViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         booking = serializer.save(customer=self.request.user)
         
-        # Find and notify online approved workers in the service category
-        from workers.models import WorkerProfile
-        workers = WorkerProfile.objects.filter(
-            online_status=True,
-            approval_status='approved',
-            service_category=booking.service_category
-        )
-        
-        channel_layer = get_channel_layer()
-        for wp in workers:
-            # Create DB notification for the worker
-            noti = Notification.objects.create(
-                user=wp.user,
-                title="New Instant Booking Request",
-                message=f"New instant request for {booking.service_category.name}. Problem: {booking.problem_type}.",
-                notification_type="incoming_booking_request"
+        try:
+            # Find and notify online approved workers in the service category
+            from workers.models import WorkerProfile
+            workers = WorkerProfile.objects.filter(
+                online_status=True,
+                approval_status='approved',
+                service_category=booking.service_category
             )
+            
+            channel_layer = get_channel_layer()
+            for wp in workers:
+                # Create DB notification for the worker
+                noti = Notification.objects.create(
+                    user=wp.user,
+                    title="New Instant Booking Request",
+                    message=f"New instant request for {booking.service_category.name}. Problem: {booking.problem_type}.",
+                    notification_type="incoming_booking_request"
+                )
+                if channel_layer:
+                    try:
+                        async_to_sync(channel_layer.group_send)(
+                            f"user_{wp.user.id}",
+                            {
+                                "type": "send_notification",
+                                "data": {
+                                    "type": "notification",
+                                    "notification": NotificationSerializer(noti).data,
+                                    "booking": BookingSerializer(booking).data
+                                }
+                            }
+                        )
+                    except Exception as ex:
+                        logger.error(f"Error sending WS notification to worker {wp.user.id}: {ex}")
+
+            # Broadcast the new available booking request to all workers in this category
             if channel_layer:
-                async_to_sync(channel_layer.group_send)(
-                    f"user_{wp.user.id}",
-                    {
-                        "type": "send_notification",
-                        "data": {
-                            "type": "notification",
-                            "notification": NotificationSerializer(noti).data,
-                            "booking": BookingSerializer(booking).data
-                        }
-                    }
-                )
+                category_id_group = f"category_{booking.service_category.id}"
+                category_slug_group = booking.service_category.name.lower().replace(' ', '_')
+                for group in [category_id_group, category_slug_group]:
+                    try:
+                        async_to_sync(channel_layer.group_send)(
+                            group,
+                            {
+                                "type": "send_notification",
+                                "data": {
+                                    "type": "booking_available",
+                                    "booking": BookingSerializer(booking).data
+                                }
+                            }
+                        )
+                    except Exception as ex:
+                        logger.error(f"Error broadcasting to group {group}: {ex}")
 
-        # Broadcast the new available booking request to all workers in this category
-        channel_layer = get_channel_layer()
-        if channel_layer:
-            category_id_group = f"category_{booking.service_category.id}"
-            category_slug_group = booking.service_category.name.lower().replace(' ', '_')
-            for group in [category_id_group, category_slug_group]:
-                async_to_sync(channel_layer.group_send)(
-                    group,
-                    {
-                        "type": "send_notification",
-                        "data": {
-                            "type": "booking_available",
-                            "booking": BookingSerializer(booking).data
-                        }
-                    }
-                )
+            # Create notification for self
+            create_and_send_notification(
+                user=self.request.user,
+                title="Booking Placed",
+                message=f"Your request for {booking.service_category.name} is placed. Searching for nearest worker...",
+                notification_type="booking_update"
+            )
 
-        # Create notification for self
-        create_and_send_notification(
-            user=self.request.user,
-            title="Booking Placed",
-            message=f"Your request for {booking.service_category.name} is placed. Searching for nearest worker...",
-            notification_type="booking_update"
-        )
+            # Send booking confirmation email to customer
+            from notifications.email_service import EmailNotificationService
+            EmailNotificationService.send_booking_confirmation_email(booking)
 
-        # Send booking confirmation email to customer
-        from notifications.email_service import EmailNotificationService
-        EmailNotificationService.send_booking_confirmation_email(booking)
-
-        # Broadcast booking_created to the booking group
-        booking_data = BookingSerializer(booking).data
-        send_booking_update(booking.id, booking_data, 'booking_created')
+            # Broadcast booking_created to the booking group
+            booking_data = BookingSerializer(booking).data
+            send_booking_update(booking.id, booking_data, 'booking_created')
+        except Exception as e:
+            logger.exception(f"Error during post-booking notification process for booking {booking.id}: {e}")
 
     @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny], url_path='track')
     def track(self, request):
