@@ -27,5 +27,5 @@ RUN mkdir -p /app/staticfiles /app/media
 
 EXPOSE 8000
 
-# Default command runs Daphne ASGI server for HTTP & WebSockets
-CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "config.asgi:application"]
+# Default command runs migrations then Daphne ASGI server
+CMD sh -c "python manage.py migrate --noinput && daphne -b 0.0.0.0 -p 8000 config.asgi:application"
