@@ -2,7 +2,8 @@ import axios from 'axios';
 
 const defaultHost = typeof window !== 'undefined' ? window.location.hostname : '127.0.0.1';
 const FALLBACK_API_ORIGIN = `http://${defaultHost}:8000`;
-const configuredApiOrigin = import.meta.env.VITE_API_ORIGIN?.replace(/\/$/, '');
+const rawApiUrl = import.meta.env.VITE_API_ORIGIN || import.meta.env.VITE_API_BASE_URL;
+const configuredApiOrigin = rawApiUrl?.replace(/\/$/, '').replace(/\/api$/, '');
 
 export const API_ORIGIN = configuredApiOrigin || FALLBACK_API_ORIGIN;
 export const API_BASE_URL = `${API_ORIGIN}/api/`;
@@ -19,7 +20,8 @@ export const buildApiUrl = (path) => {
 };
 
 export const buildWsUrl = (path, query = '') => {
-  const wsOrigin = API_ORIGIN.replace(/^http/i, 'ws');
+  const rawWsUrl = import.meta.env.VITE_WS_BASE_URL || import.meta.env.VITE_WS_ORIGIN;
+  const wsOrigin = rawWsUrl ? rawWsUrl.replace(/\/$/, '') : API_ORIGIN.replace(/^http/i, 'ws');
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
   return `${wsOrigin}${normalizedPath}${query}`;
 };
