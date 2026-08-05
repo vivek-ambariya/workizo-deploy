@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
-  Box, Typography, TextField, Button, IconButton, Avatar, Badge, Paper
+  Box, Typography, TextField, Button, IconButton, Avatar, Badge, Paper,
+  useTheme, useMediaQuery
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
@@ -10,6 +11,9 @@ import { tokens } from '../design/tokens';
 import toast from 'react-hot-toast';
 
 function ChatWindow({ open, onClose, bookingId, currentUser, otherUser }) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [socketStatus, setSocketStatus] = useState('connecting'); // 'connecting', 'connected', 'reconnecting', 'disconnected'
@@ -202,11 +206,13 @@ function ChatWindow({ open, onClose, bookingId, currentUser, otherUser }) {
       open={open}
       onClose={onClose}
       fullWidth
+      fullScreen={isMobile}
       maxWidth="sm"
       PaperProps={{
         sx: {
-          borderRadius: '24px',
-          height: '600px',
+          borderRadius: isMobile ? '0px' : '24px',
+          height: isMobile ? '100dvh' : '600px',
+          maxHeight: isMobile ? '100dvh' : '90vh',
           display: 'flex',
           flexDirection: 'column',
           boxShadow: '0 10px 40px rgba(0,0,0,0.12)'

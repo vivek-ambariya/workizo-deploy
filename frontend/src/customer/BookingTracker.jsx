@@ -685,11 +685,11 @@ function BookingTracker() {
         <Typography variant="subtitle1" fontWeight={800} sx={{ mb: 4, color: tokens.colors.primary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           Service Tracking
         </Typography>
-        <Box sx={{ width: '100%', position: 'relative', px: { xs: 1, md: 3 } }}>
-          {/* Progress Connector Line */}
+        <Box sx={{ width: '100%', position: 'relative', px: { xs: 0, md: 3 } }}>
+          {/* Progress Connector Line - Desktop Only */}
           <Box sx={{
             position: 'absolute', top: '22px', left: '6%', right: '6%', height: '4px',
-            bgcolor: '#E5E7EB', zIndex: 1
+            bgcolor: '#E5E7EB', zIndex: 1, display: { xs: 'none', md: 'block' }
           }}>
             <Box sx={{
               width: `${currentStepIdx >= 0 ? (currentStepIdx / 5) * 100 : 0}%`,
@@ -697,7 +697,8 @@ function BookingTracker() {
             }} />
           </Box>
 
-          <Grid container justifyContent="space-between">
+          {/* Desktop Timeline Horizontal */}
+          <Grid container justifyContent="space-between" sx={{ display: { xs: 'none', md: 'flex' } }}>
             {[
               { key: 'searching', label: 'Searching', desc: 'Finding nearby captain' },
               { key: 'accepted', label: 'Accepted', desc: 'Captain assigned' },
@@ -761,6 +762,60 @@ function BookingTracker() {
               );
             })}
           </Grid>
+
+          {/* Mobile Timeline Vertical */}
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, flexDirection: 'column', gap: 2.5, pl: 1 }}>
+            {[
+              { key: 'searching', label: 'Searching', desc: 'Finding nearby captain' },
+              { key: 'accepted', label: 'Accepted', desc: 'Captain assigned' },
+              { key: 'on_the_way', label: 'On The Way', desc: 'Traveling to location' },
+              { key: 'arrived', label: 'Arrived', desc: 'Captain at site' },
+              { key: 'repair_started', label: 'Work Started', desc: 'Repairs in progress' },
+              { key: 'completed', label: 'Completed', desc: 'Service finished' }
+            ].map((step, idx) => {
+              const isActive = currentStepIdx === idx;
+              const isCompleted = currentStepIdx > idx;
+
+              let circleBg = '#ffffff';
+              let circleBorder = '#D1D5DB';
+              let circleColor = '#9CA3AF';
+              let labelColor = tokens.colors.textSecondary;
+
+              if (isActive) {
+                circleBg = '#1A73E8';
+                circleBorder = '#1A73E8';
+                circleColor = '#ffffff';
+                labelColor = '#1A73E8';
+              } else if (isCompleted) {
+                circleBg = '#1E3A8A';
+                circleBorder = '#1E3A8A';
+                circleColor = '#ffffff';
+                labelColor = '#1E3A8A';
+              }
+
+              return (
+                <Box key={idx} display="flex" alignItems="center" gap={2}>
+                  <Box sx={{
+                    width: '38px', height: '38px', borderRadius: '50%', flexShrink: 0,
+                    bgcolor: circleBg, border: `2px solid ${circleBorder}`, color: circleColor,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontWeight: 800, fontSize: '0.9rem',
+                    boxShadow: isActive ? '0 0 10px rgba(26, 115, 232, 0.4)' : 'none'
+                  }}>
+                    {isCompleted ? '✓' : idx + 1}
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" fontWeight={800} sx={{ color: labelColor, fontSize: '0.9rem' }}>
+                      {step.label}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.78rem' }}>
+                      {step.desc}
+                    </Typography>
+                  </Box>
+                </Box>
+              );
+            })}
+          </Box>
         </Box>
       </Paper>
 

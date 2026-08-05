@@ -466,7 +466,11 @@ function WorkerJobDetails() {
             {/* Timeline Stepper */}
             <DashboardCard title="Service Timeline Checkpoints" subtitle="Track check-in, execution, and invoice completion">
               <Box sx={{ mt: 2 }}>
-                <Stepper activeStep={activeStepIdx >= 0 ? activeStepIdx : 0} alternativeLabel>
+                <Stepper 
+                  activeStep={activeStepIdx >= 0 ? activeStepIdx : 0} 
+                  orientation={typeof window !== 'undefined' && window.innerWidth < 600 ? 'vertical' : 'horizontal'} 
+                  alternativeLabel={typeof window !== 'undefined' && window.innerWidth >= 600}
+                >
                   {JOB_TIMELINE.map((step) => (
                     <Step key={step.key}>
                       <StepLabel
