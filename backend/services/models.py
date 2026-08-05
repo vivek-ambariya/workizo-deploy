@@ -31,8 +31,8 @@ class SystemSetting(models.Model):
     company_logo = models.ImageField(upload_to='settings/', blank=True, null=True)
     contact_details = models.TextField(blank=True, null=True)
     gst_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=18.00)
-    support_email = models.EmailField(default='support@workizo.com')
-    support_phone = models.CharField(max_length=15, default='+919876543210')
+    support_email = models.EmailField(default='workizo24.7@gmail.com')
+    support_phone = models.CharField(max_length=15, default='+919377631331')
     terms_conditions = models.TextField(blank=True, null=True)
     privacy_policy = models.TextField(blank=True, null=True)
     

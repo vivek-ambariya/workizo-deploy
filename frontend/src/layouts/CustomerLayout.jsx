@@ -478,27 +478,42 @@ const CustomerLayout = () => {
             {/* Column 4: Contact Us */}
             <Box sx={{ flex: '1 1 250px', minWidth: '220px', maxWidth: '300px' }}>
               <Typography variant="subtitle1" fontWeight={600} sx={{ color: '#ffffff', mb: 2.5, fontFamily: 'Outfit' }}>
-                Contact Us
+                Contact & Developer
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
+                  <PersonIcon sx={{ color: '#6366F1', fontSize: 20, mt: 0.2 }} />
+                  <Box>
+                    <Typography variant="caption" sx={{ color: '#9CA3AF', display: 'block', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.05em' }}>
+                      MADE BY
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#FFFFFF', fontWeight: 600 }}>
+                      Ambariya Vivek
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
                   <PhoneIcon sx={{ color: '#9CA3AF', fontSize: 20, mt: 0.2 }} />
                   <Typography variant="body2" sx={{ color: '#9CA3AF' }}>
-                    +91 9876543210
+                    +91 9377631331
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
                   <EmailIcon sx={{ color: '#9CA3AF', fontSize: 20, mt: 0.2 }} />
-                  <Typography variant="body2" sx={{ color: '#9CA3AF', wordBreak: 'break-all' }}>
-                    support@workizo.com
-                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                    <Typography variant="body2" component="a" href="mailto:workizo24.7@gmail.com" sx={{ color: '#9CA3AF', wordBreak: 'break-all', textDecoration: 'none', '&:hover': { color: '#ffffff' } }}>
+                      workizo24.7@gmail.com
+                    </Typography>
+                    <Typography variant="caption" component="a" href="mailto:vivekambaria@gmail.com" sx={{ color: '#6B7280', wordBreak: 'break-all', textDecoration: 'none', '&:hover': { color: '#9CA3AF' } }}>
+                      Personal: vivekambaria@gmail.com
+                    </Typography>
+                  </Box>
                 </Box>
                 <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-start' }}>
                   <LocationOnIcon sx={{ color: '#9CA3AF', fontSize: 20, mt: 0.2 }} />
                   <Typography variant="body2" sx={{ color: '#9CA3AF', lineHeight: 1.5, whiteSpace: 'normal', wordBreak: 'break-word' }}>
-                    SIGNATURE-2, C-909, Sarkhej - Sanand Rd,<br />
-                    Makarba, Sarkhej-Okaf, Ahmedabad,<br />
-                    Gujarat 382210
+                    Vaishnodevi Circle, Sardar Patel Ring Rd,<br />
+                    Ahmedabad, Gujarat 382501, India
                   </Typography>
                 </Box>
               </Box>
@@ -520,7 +535,7 @@ const CustomerLayout = () => {
               © {new Date().getFullYear()} Workizo. All rights reserved.
             </Typography>
             <Typography variant="caption" sx={{ color: '#6B7280', textAlign: { xs: 'center', sm: 'right' } }}>
-              Built with Django & React. Secure JWT Authentication. Role-Based Access Control.
+              Made by Ambariya Vivek | Built with Django & React
             </Typography>
           </Box>
         </Container>

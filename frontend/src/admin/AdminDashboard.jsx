@@ -2520,8 +2520,8 @@ const SettingsView = ({ hideHeader }) => {
   // Settings state
   const [companyName, setCompanyName] = useState('Workizo');
   const [gstPercentage, setGstPercentage] = useState(18.00);
-  const [supportEmail, setSupportEmail] = useState('support@workizo.com');
-  const [supportPhone, setSupportPhone] = useState('+919876543210');
+  const [supportEmail, setSupportEmail] = useState('workizo24.7@gmail.com');
+  const [supportPhone, setSupportPhone] = useState('+919377631331');
   const [contactDetails, setContactDetails] = useState('');
   const [terms, setTerms] = useState('');
   const [privacy, setPrivacy] = useState('');

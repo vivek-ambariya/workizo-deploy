@@ -970,10 +970,12 @@ const SplineLanding = () => {
           <Box
             sx={{
               display: 'flex',
-              flexDirection: 'row',
+              flexDirection: { xs: 'column', md: 'row' },
+              alignItems: 'center',
               justifyContent: 'center',
               position: 'relative',
               width: '100%',
+              gap: { xs: 4, md: 0 },
             }}
           >
             {/* Center vertical line */}
@@ -995,7 +997,7 @@ const SplineLanding = () => {
             <Box
               sx={{
                 width: { xs: '100%', md: '50%' },
-                display: 'flex',
+                display: { xs: 'contents', md: 'flex' },
                 flexDirection: 'column',
                 alignItems: { xs: 'center', md: 'flex-end' },
                 gap: { xs: 4, md: 12 },
@@ -1008,7 +1010,7 @@ const SplineLanding = () => {
               <Card
                 className="spline-timeline-step-left"
                 sx={{
-                  p: 4,
+                  p: { xs: 2.5, sm: 4 },
                   borderRadius: '20px',
                   border: '1px solid rgba(255, 255, 255, 0.08)',
                   bgcolor: 'rgba(255, 255, 255, 0.02)',
@@ -1017,6 +1019,7 @@ const SplineLanding = () => {
                   color: '#ffffff',
                   width: '100%',
                   maxWidth: '480px',
+                  order: { xs: 1, md: 0 },
                 }}
               >
                 <Typography
@@ -1063,7 +1066,7 @@ const SplineLanding = () => {
               <Card
                 className="spline-timeline-step-left"
                 sx={{
-                  p: 4,
+                  p: { xs: 2.5, sm: 4 },
                   borderRadius: '20px',
                   border: '1px solid rgba(255, 255, 255, 0.08)',
                   bgcolor: 'rgba(255, 255, 255, 0.02)',
@@ -1073,6 +1076,7 @@ const SplineLanding = () => {
                   width: '100%',
                   maxWidth: '480px',
                   mt: { md: 12 },
+                  order: { xs: 3, md: 0 },
                 }}
               >
                 <Typography
@@ -1128,7 +1132,7 @@ const SplineLanding = () => {
             <Box
               sx={{
                 width: { xs: '100%', md: '50%' },
-                display: 'flex',
+                display: { xs: 'contents', md: 'flex' },
                 flexDirection: 'column',
                 alignItems: { xs: 'center', md: 'flex-start' },
                 gap: { xs: 4, md: 12 },
@@ -1142,7 +1146,7 @@ const SplineLanding = () => {
               <Card
                 className="spline-timeline-step-right"
                 sx={{
-                  p: 4,
+                  p: { xs: 2.5, sm: 4 },
                   borderRadius: '20px',
                   border: '1px solid rgba(255, 255, 255, 0.08)',
                   bgcolor: 'rgba(255, 255, 255, 0.02)',
@@ -1151,6 +1155,7 @@ const SplineLanding = () => {
                   color: '#ffffff',
                   width: '100%',
                   maxWidth: '480px',
+                  order: { xs: 2, md: 0 },
                 }}
               >
                 <Typography
@@ -1213,7 +1218,7 @@ const SplineLanding = () => {
               <Card
                 className="spline-timeline-step-right"
                 sx={{
-                  p: 4,
+                  p: { xs: 2.5, sm: 4 },
                   borderRadius: '20px',
                   border: '1px solid rgba(255, 255, 255, 0.08)',
                   bgcolor: 'rgba(255, 255, 255, 0.02)',
@@ -1223,6 +1228,7 @@ const SplineLanding = () => {
                   width: '100%',
                   maxWidth: '480px',
                   mt: { md: 12 },
+                  order: { xs: 4, md: 0 },
                 }}
               >
                 <Typography
@@ -2366,23 +2372,72 @@ const SplineLanding = () => {
       {/* Footer / Copyright bar */}
       <Box
         sx={{
-          py: 4,
+          py: 5,
+          px: 3,
           textAlign: 'center',
-          borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
           position: 'relative',
           zIndex: 10,
+          background: 'rgba(10, 10, 15, 0.6)',
+          backdropFilter: 'blur(12px)',
         }}
       >
-        <Typography
-          sx={{
-            color: 'rgba(255, 255, 255, 0.35)',
-            fontSize: '0.75rem',
-            fontFamily: "'NewBlack', sans-serif",
-            letterSpacing: '0.08em',
-          }}
-        >
-          © {new Date().getFullYear()} WORKIZO PLATFORM INC. ALL RIGHTS RESERVED.
-        </Typography>
+        <Container maxWidth="lg">
+          <Grid container spacing={3} justifyContent="center" alignItems="flex-start" sx={{ mb: 4, textAlign: { xs: 'center', sm: 'left' } }}>
+            <Grid item xs={12} sm={6} md={3}>
+              <Typography variant="subtitle2" sx={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 700, mb: 1, letterSpacing: '0.05em' }}>
+                MADE BY
+              </Typography>
+              <Typography variant="body2" sx={{ color: '#ffffff', fontWeight: 600, fontSize: '0.95rem' }}>
+                Ambariya Vivek
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={3}>
+              <Typography variant="subtitle2" sx={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 700, mb: 1, letterSpacing: '0.05em' }}>
+                CONTACT EMAIL
+              </Typography>
+              <Typography variant="body2" component="a" href="mailto:workizo24.7@gmail.com" display="block" sx={{ color: 'rgba(255, 255, 255, 0.7)', textDecoration: 'none', '&:hover': { color: '#fff' } }}>
+                workizo24.7@gmail.com
+              </Typography>
+              <Typography variant="caption" component="a" href="mailto:vivekambaria@gmail.com" display="block" sx={{ color: 'rgba(255, 255, 255, 0.4)', textDecoration: 'none', mt: 0.5, '&:hover': { color: 'rgba(255, 255, 255, 0.7)' } }}>
+                Personal: vivekambaria@gmail.com
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={3}>
+              <Typography variant="subtitle2" sx={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 700, mb: 1, letterSpacing: '0.05em' }}>
+                PHONE
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                +91 9377631331
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={3}>
+              <Typography variant="subtitle2" sx={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 700, mb: 1, letterSpacing: '0.05em' }}>
+                LOCATION
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.6)', lineHeight: 1.5, fontSize: '0.825rem' }}>
+                Vaishnodevi Circle, Sardar Patel Ring Rd,<br />
+                Ahmedabad, Gujarat 382501, India
+              </Typography>
+            </Grid>
+          </Grid>
+
+          <Typography
+            sx={{
+              color: 'rgba(255, 255, 255, 0.35)',
+              fontSize: '0.75rem',
+              fontFamily: "'Inter', sans-serif",
+              letterSpacing: '0.08em',
+              pt: 3,
+              borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+            }}
+          >
+            © {new Date().getFullYear()} WORKIZO PLATFORM INC. MADE BY AMBARIYA VIVEK. ALL RIGHTS RESERVED.
+          </Typography>
+        </Container>
       </Box>
 
       {/* Elegant long empty space showing the Spline particles at the bottom */}
