@@ -787,39 +787,38 @@ const LandingPage = () => {
         /* ── RESPONSIVE ─────────────────────────────────────────────────────── */
         @media (max-width: 1024px) {
           .lp-hero {
-            flex-direction: column-reverse;
-            padding: 60px 40px;
-            gap: 48px;
+            flex-direction: column;
+            padding: 40px 24px;
+            gap: 40px;
             min-height: auto;
           }
-          .lp-left { flex: unset; width: 100%; gap: 28px; }
-          .lp-right { width: 100%; height: 420px; display: flex; justify-content: center; align-items: center; }
-          .lp-photo-tall { width: 200px; height: 320px; left: calc(50% - 220px); top: 30px; }
-          .lp-photo-top-right { width: 200px; height: 170px; left: calc(50% - 10px); top: 0; }
-          .lp-photo-bottom-right { width: 210px; height: 200px; left: calc(50% - 20px); top: 190px; }
-          .lp-section { padding: 60px 40px; }
-          .lp-cta-wrapper { padding: 0 40px 60px; }
+          .lp-left { flex: unset; width: 100%; gap: 24px; }
+          .lp-right { display: none; }
+          .lp-section { padding: 48px 24px; }
+          .lp-cta-wrapper { padding: 0 24px 48px; }
           .lp-how-grid, .lp-safety-grid { gap: 24px; }
         }
 
         @media (max-width: 900px) {
           .lp-how-grid, .lp-safety-grid { grid-template-columns: 1fr; }
-          .lp-how-card, .lp-safety-card { padding: 30px; }
-          .lp-cta-card { flex-direction: column; text-align: center; padding: 48px 32px; gap: 32px; }
+          .lp-how-card, .lp-safety-card { padding: 24px; }
+          .lp-cta-card { flex-direction: column; text-align: center; padding: 40px 24px; gap: 24px; }
           .lp-cta-desc { margin: 0 auto; }
         }
 
         @media (max-width: 640px) {
-          .lp-hero { padding: 40px 20px; }
-          .lp-right { height: 320px; }
-          .lp-photo-tall { width: 150px; height: 240px; left: calc(50% - 160px); top: 20px; border-width: 4px; }
-          .lp-photo-top-right { width: 150px; height: 120px; left: calc(50% - 0px); top: 0; border-width: 4px; }
-          .lp-photo-bottom-right { width: 150px; height: 140px; left: calc(50% - 10px); top: 140px; border-width: 4px; }
-          .lp-services-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-          .lp-section { padding: 48px 20px; }
-          .lp-cta-wrapper { padding: 0 20px 48px; }
-          .lp-cta-card { padding: 36px 20px; }
-          .lp-stats { flex-direction: column; gap: 20px; }
+          .lp-hero { padding: 24px 16px; gap: 24px; }
+          .lp-headline { font-size: 2.1rem; }
+          .lp-widget { padding: 18px 14px; border-radius: 20px; }
+          .lp-services-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+          .lp-service-card { padding: 14px 8px; border-radius: 14px; }
+          .lp-service-icon { width: 44px; height: 44px; border-radius: 12px; }
+          .lp-service-name { font-size: 0.8rem; }
+          .lp-service-desc { font-size: 0.68rem; }
+          .lp-section { padding: 40px 16px; }
+          .lp-cta-wrapper { padding: 0 16px 40px; }
+          .lp-cta-card { padding: 28px 16px; border-radius: 20px; }
+          .lp-stats { flex-direction: column; gap: 16px; }
         }
       `}</style>
 
