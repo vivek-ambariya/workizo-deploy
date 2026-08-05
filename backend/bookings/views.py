@@ -57,6 +57,19 @@ class BookingViewSet(viewsets.ModelViewSet):
     serializer_class = BookingSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def create(self, request, *args, **kwargs):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        except Exception as e:
+            logger.exception("Error creating booking: %s", e)
+            if hasattr(e, 'detail'):
+                return Response({"detail": str(e.detail)}, status=status.HTTP_400_BAD_REQUEST if getattr(e, 'status_code', 500) < 500 else status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"detail": f"Server error while creating booking: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     def get_queryset(self):
         user = self.request.user
         if not user.is_authenticated:

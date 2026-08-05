@@ -77,9 +77,14 @@ function BookingFlow() {
       if (err.response?.data) {
         const d = err.response.data;
         if (typeof d === 'string') {
-          errorMsg = d;
+          if (d.includes('<!doctype') || d.includes('<html')) {
+            const titleMatch = d.match(/<title>(.*?)<\/title>/i);
+            errorMsg = titleMatch ? titleMatch[1] : 'Server Error (500)';
+          } else {
+            errorMsg = d;
+          }
         } else if (d.detail) {
-          errorMsg = d.detail;
+          errorMsg = typeof d.detail === 'string' ? d.detail : JSON.stringify(d.detail);
         } else if (typeof d === 'object') {
           const entries = Object.entries(d);
           if (entries.length > 0) {

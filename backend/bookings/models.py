@@ -46,7 +46,10 @@ class Booking(models.Model):
         super().save(*args, **kwargs)
         if is_new and not self.tracking_id:
             self.tracking_id = f"WRK-{self.id + 10000}"
-            super().save(update_fields=['tracking_id'])
+            try:
+                super().save(update_fields=['tracking_id', 'updated_at'])
+            except Exception:
+                pass
 
     def __str__(self):
         return f"Booking #{self.id} - {self.service_category.name} ({self.status})"
