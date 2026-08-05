@@ -204,7 +204,7 @@ class BookingViewSet(viewsets.ModelViewSet):
             return Response({"detail": "You must be approved and online to accept jobs."}, status=status.HTTP_400_BAD_REQUEST)
         
         from django.db import transaction
-        with transaction.atomic():
+        with transaction.atomic():  # type: ignore
             try:
                 booking = Booking.objects.select_for_update().get(pk=pk)
             except Booking.DoesNotExist:
@@ -280,7 +280,7 @@ class BookingViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], url_path='update-status')
     def update_status(self, request, pk=None):
         from django.db import transaction
-        with transaction.atomic():
+        with transaction.atomic():  # type: ignore
             try:
                 booking = Booking.objects.select_for_update().get(pk=pk)
             except Booking.DoesNotExist:
