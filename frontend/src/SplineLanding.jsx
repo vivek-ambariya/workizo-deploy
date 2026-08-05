@@ -252,25 +252,29 @@ const SplineLanding = () => {
       );
     });
 
-    // Pinned scroll team reveal timeline
-    const teamTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: '.pinned-team-section',
-        start: 'top top',
-        end: '+=180%',
-        pin: true,
-        scrub: true,
-        anticipatePin: 1,
-      }
-    });
+    // Pinned scroll team reveal timeline (Only on desktop >= 900px)
+    if (window.innerWidth >= 900) {
+      const teamTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: '.pinned-team-section',
+          start: 'top top',
+          end: '+=180%',
+          pin: true,
+          scrub: true,
+          anticipatePin: 1,
+        }
+      });
 
-    // Set initial card states
-    gsap.set('.spline-team-card-left', { opacity: 0.15, x: -120 });
-    gsap.set('.spline-team-card-right', { opacity: 0.15, x: 120 });
+      gsap.set('.spline-team-card-left', { opacity: 0.15, x: -120 });
+      gsap.set('.spline-team-card-right', { opacity: 0.15, x: 120 });
 
-    teamTl
-      .to('.spline-team-card-left', { opacity: 1, x: 0, duration: 1.5, ease: 'power2.out' })
-      .to('.spline-team-card-right', { opacity: 1, x: 0, duration: 1.5, ease: 'power2.out' }, '+=0.5');
+      teamTl
+        .to('.spline-team-card-left', { opacity: 1, x: 0, duration: 1.5, ease: 'power2.out' })
+        .to('.spline-team-card-right', { opacity: 1, x: 0, duration: 1.5, ease: 'power2.out' }, '+=0.5');
+    } else {
+      gsap.set('.spline-team-card-left', { opacity: 1, x: 0 });
+      gsap.set('.spline-team-card-right', { opacity: 1, x: 0 });
+    }
 
     return () => {
       ScrollTrigger.getAll().forEach(t => t.kill());
@@ -1181,7 +1185,8 @@ const SplineLanding = () => {
       <Box
         className="pinned-team-section"
         sx={{
-          height: '100vh',
+          minHeight: { xs: 'auto', md: '100vh' },
+          py: { xs: 8, md: 0 },
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -1191,7 +1196,7 @@ const SplineLanding = () => {
           pointerEvents: 'auto',
           color: '#ffffff',
           boxSizing: 'border-box',
-          overflow: 'hidden',
+          overflow: { xs: 'visible', md: 'hidden' },
         }}
       >
         <Container maxWidth="lg">
@@ -1200,7 +1205,7 @@ const SplineLanding = () => {
             className="spline-team-header"
             sx={{
               textAlign: 'left',
-              mb: 8,
+              mb: { xs: 4, md: 8 },
               width: '100%',
               maxWidth: '700px',
             }}
@@ -1246,19 +1251,20 @@ const SplineLanding = () => {
             </Typography>
           </Box>
 
-          <Grid container spacing={4} justifyContent="center" alignItems="stretch">
+          <Grid container spacing={{ xs: 3, md: 4 }} justifyContent="center" alignItems="stretch">
             {/* Card 1: Ambariya Vivek */}
-            <Grid item xs={12} md={6} className="spline-team-card-left" sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Grid item xs={12} md={6} className="spline-team-card-left" sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
               <Card
                 sx={{
-                  p: 4,
+                  p: { xs: 3, sm: 4 },
                   width: { xs: '100%', sm: '440px' },
+                  maxWidth: '100%',
                   mx: 'auto',
                   borderRadius: '24px',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  bgcolor: 'rgba(0, 0, 0, 0.5)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  bgcolor: 'rgba(0, 0, 0, 0.65)',
                   backdropFilter: 'blur(16px)',
-                  boxShadow: 'none',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
                   color: '#ffffff',
                   display: 'flex',
                   flexDirection: 'column',
@@ -1269,8 +1275,8 @@ const SplineLanding = () => {
                   transition: 'all 0.3s ease-in-out',
                   '&:hover': {
                     transform: 'translateY(-8px)',
-                    borderColor: 'rgba(255, 255, 255, 0.25)',
-                    boxShadow: '0 0 25px rgba(255, 255, 255, 0.1)',
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                    boxShadow: '0 0 25px rgba(255, 255, 255, 0.15)',
                   },
                 }}
               >
@@ -1475,17 +1481,18 @@ const SplineLanding = () => {
             </Grid>
 
             {/* Card 2: Ved Goyani */}
-            <Grid item xs={12} md={6} className="spline-team-card-right" sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Grid item xs={12} md={6} className="spline-team-card-right" sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
               <Card
                 sx={{
-                  p: 4,
+                  p: { xs: 3, sm: 4 },
                   width: { xs: '100%', sm: '440px' },
+                  maxWidth: '100%',
                   mx: 'auto',
                   borderRadius: '24px',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  bgcolor: 'rgba(0, 0, 0, 0.5)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  bgcolor: 'rgba(0, 0, 0, 0.65)',
                   backdropFilter: 'blur(16px)',
-                  boxShadow: 'none',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
                   color: '#ffffff',
                   display: 'flex',
                   flexDirection: 'column',
@@ -1496,8 +1503,8 @@ const SplineLanding = () => {
                   transition: 'all 0.3s ease-in-out',
                   '&:hover': {
                     transform: 'translateY(-8px)',
-                    borderColor: 'rgba(255, 255, 255, 0.25)',
-                    boxShadow: '0 0 25px rgba(255, 255, 255, 0.1)',
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                    boxShadow: '0 0 25px rgba(255, 255, 255, 0.15)',
                   },
                 }}
               >
