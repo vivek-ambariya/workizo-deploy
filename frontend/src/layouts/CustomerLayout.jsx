@@ -116,8 +116,8 @@ const CustomerLayout = () => {
               </Typography>
             </Box>
 
-            {/* Nav Menu Actions */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            {/* Nav Menu Actions - Desktop */}
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1.5 }}>
               <Button
                 variant="text"
                 color="inherit"
@@ -128,27 +128,24 @@ const CustomerLayout = () => {
                 Home
               </Button>
 
-
               {(!isAuthenticated || user?.role === 'customer') && (
-                <>
-                  <Button
-                    variant="text"
-                    color="inherit"
-                    className="nav-link-reveal"
-                    onClick={() => {
-                      if (isAuthenticated) {
-                        navigate('/customer/book');
-                      } else {
-                        toast.error('Please log in first to book a service');
-                        localStorage.setItem('redirect_after_login', '/customer/book');
-                        navigate('/customer/login');
-                      }
-                    }}
-                    sx={{ color: location.pathname.includes('/book') ? '#000000' : '#4B5563', fontWeight: 600 }}
-                  >
-                    Book Service
-                  </Button>
-                </>
+                <Button
+                  variant="text"
+                  color="inherit"
+                  className="nav-link-reveal"
+                  onClick={() => {
+                    if (isAuthenticated) {
+                      navigate('/customer/book');
+                    } else {
+                      toast.error('Please log in first to book a service');
+                      localStorage.setItem('redirect_after_login', '/customer/book');
+                      navigate('/customer/login');
+                    }
+                  }}
+                  sx={{ color: location.pathname.includes('/book') ? '#000000' : '#4B5563', fontWeight: 600 }}
+                >
+                  Book Service
+                </Button>
               )}
 
               {(!isAuthenticated || user?.role === 'admin') && (
@@ -163,7 +160,6 @@ const CustomerLayout = () => {
                 </Button>
               )}
 
-              {/* Become a Captain button - styled in Workizo black outlined pill button */}
               {!isAuthenticated && (
                 <Button
                   variant="outlined"
@@ -263,6 +259,20 @@ const CustomerLayout = () => {
                   Login / Sign Up
                 </Button>
               )}
+            </Box>
+
+            {/* Nav Menu Actions - Mobile Hamburger */}
+            <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', gap: 1 }}>
+              {isAuthenticated && (
+                <IconButton onClick={handleMenuOpen} sx={{ p: 0 }}>
+                  <Avatar src={buildMediaUrl(user.profile_photo)} sx={{ bgcolor: '#000000', width: 32, height: 32 }}>
+                    {user.full_name?.charAt(0).toUpperCase()}
+                  </Avatar>
+                </IconButton>
+              )}
+              <IconButton onClick={handleMenuOpen} sx={{ color: '#000000' }}>
+                <DashboardIcon />
+              </IconButton>
             </Box>
           </Toolbar>
         </Container>
