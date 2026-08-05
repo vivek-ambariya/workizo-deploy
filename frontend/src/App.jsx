@@ -40,7 +40,7 @@ import WorkerWaiting from './captain/WorkerWaiting';
 import CaptainRouteWrapper from './components/CaptainRouteWrapper';
 import { Outlet } from 'react-router-dom';
 
-const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "1036814981144-mockgoogleclientid.apps.googleusercontent.com";
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "1015380078872-icsaqkdfq5dhehn137rq0k0dhi4omepa.apps.googleusercontent.com";
 
 function App() {
   return (

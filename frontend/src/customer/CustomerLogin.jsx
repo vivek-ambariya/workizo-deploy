@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import { GoogleLogin } from '@react-oauth/google';
 import toast from 'react-hot-toast';
-import { tokens } from '../design/tokens';
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "1015380078872-icsaqkdfq5dhehn137rq0k0dhi4omepa.apps.googleusercontent.com";
 
 const CustomerLogin = ({ defaultSignUp = false }) => {
   const { login, logout, isAuthenticated, user, googleLogin, register: registerAuth } = useAuth();
@@ -311,7 +311,7 @@ const CustomerLogin = ({ defaultSignUp = false }) => {
 
             <Divider sx={{ my: 2, fontSize: '0.8rem', color: 'text.secondary' }}>or use Google</Divider>
 
-            {import.meta.env.VITE_GOOGLE_CLIENT_ID && import.meta.env.VITE_GOOGLE_CLIENT_ID !== 'MOCK_CLIENT_ID' ? (
+            {googleClientId && googleClientId !== 'MOCK_CLIENT_ID' ? (
               <Box display="flex" justifyContent="center" width="100%" mb={2}>
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}
@@ -506,7 +506,7 @@ const CustomerLogin = ({ defaultSignUp = false }) => {
 
             <Divider sx={{ my: 1.5, fontSize: '0.8rem', color: 'text.secondary' }}>or use Google</Divider>
 
-            {import.meta.env.VITE_GOOGLE_CLIENT_ID && import.meta.env.VITE_GOOGLE_CLIENT_ID !== 'MOCK_CLIENT_ID' ? (
+            {googleClientId && googleClientId !== 'MOCK_CLIENT_ID' ? (
               <Box display="flex" justifyContent="center" width="100%" mb={2}>
                 <GoogleLogin
                   onSuccess={handleGoogleSuccess}

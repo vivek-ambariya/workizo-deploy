@@ -195,8 +195,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Google OAuth Client ID
+# Google OAuth Client Credentials
 GOOGLE_CLIENT_ID = env('GOOGLE_CLIENT_ID', default=None)
+GOOGLE_CLIENT_SECRET = env('GOOGLE_CLIENT_SECRET', default=None)
 
 # SMTP Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
