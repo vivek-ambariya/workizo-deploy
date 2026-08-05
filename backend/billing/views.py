@@ -1,16 +1,27 @@
 import io
+import json
+import time
+import hmac
+import hashlib
+import requests
 from decimal import Decimal
 from django.shortcuts import get_object_or_404
 from django.http import FileResponse, Http404
 from django.core.files.base import ContentFile
+from django.utils import timezone
+from django.db import transaction
+from django.conf import settings
 from rest_framework import views, permissions, status
 from rest_framework.response import Response
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 from .models import Bill, BillItem, Payment
 from .serializers import BillSerializer, PaymentSerializer
 from bookings.models import Booking
 from bookings.serializers import BookingSerializer
 from bookings.views import send_booking_update, create_and_send_notification
+from notifications.email_service import EmailNotificationService
 
 # ReportLab Invoice Imports
 from reportlab.lib.pagesizes import letter
@@ -94,14 +105,18 @@ def compile_bill_pdf(bill):
     table_data.append(["", "", Paragraph("<b>Discount:</b>", normal_style), f"-INR {bill.discount}"])
     table_data.append(["", "", Paragraph("<b>Grand Total:</b>", normal_style), f"INR {bill.grand_total}"])
     
+    items_count = bill.items.count()
+    grid_end_row = 1 + items_count
+    discount_row = 5 + items_count
+
     t = Table(table_data, colWidths=[240, 60, 100, 100])
     t.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#FAFAFB')),
         ('ALIGN', (0,0), (-1,-1), 'LEFT'),
         ('BOTTOMPADDING', (0,0), (-1,-1), 4),
         ('TOPPADDING', (0,0), (-1,-1), 4),
-        ('GRID', (0,0), (-1,-2), 0.5, colors.HexColor('#E5E7EB')),
-        ('LINEBELOW', (2,-4), (-1,-1), 1, colors.HexColor('#0F0F14')),
+        ('GRID', (0,0), (-1, grid_end_row), 0.5, colors.HexColor('#E5E7EB')),
+        ('LINEBELOW', (2, discount_row), (-1, discount_row), 1, colors.HexColor('#0F0F14')),
     ]))
     
     story.append(t)
@@ -160,6 +175,7 @@ class GenerateBillView(views.APIView):
                 items_data = []
 
         # Validate spare parts before creating the bill database row
+        preview_parts_charges = Decimal('0.00')
         for item in items_data:
             name = item.get('part_name')
             if name:
@@ -176,6 +192,13 @@ class GenerateBillView(views.APIView):
                     return Response({"detail": "Spare part quantity must be at least 1."}, status=status.HTTP_400_BAD_REQUEST)
                 if price < 0:
                     return Response({"detail": "Spare part price cannot be negative."}, status=status.HTTP_400_BAD_REQUEST)
+                
+                preview_parts_charges += (price * qty)
+
+        subtotal_preview = labour_charges + preview_parts_charges
+        gst_preview = (subtotal_preview * Decimal('0.18')).quantize(Decimal('0.01'))
+        if discount > (subtotal_preview + gst_preview):
+            return Response({"detail": f"Discount (₹{discount}) cannot exceed total bill amount (₹{subtotal_preview + gst_preview})."}, status=status.HTTP_400_BAD_REQUEST)
 
         supplier_invoice = request.FILES.get('supplier_invoice')
 
@@ -297,17 +320,6 @@ class ApproveBillView(views.APIView):
         )
 
         return Response(BillSerializer(bill).data)
-
-import time
-import hmac
-import hashlib
-import requests
-from django.utils import timezone
-from django.db import transaction
-from django.conf import settings
-from rest_framework.exceptions import ValidationError
-from channels.layers import get_channel_layer
-
 
 def compile_receipt_pdf(payment):
     booking = payment.booking
@@ -465,7 +477,7 @@ class InitiateOnlinePaymentView(views.APIView):
             rzp_order_id = f"order_mock_{booking.id}_{int(time.time())}"
 
         # Update or create Payment in database
-        payment, created = Payment.objects.update_or_create(
+        payment, _ = Payment.objects.update_or_create(
             booking=booking,
             defaults={
                 'customer': booking.customer,
@@ -534,7 +546,7 @@ class VerifyOnlinePaymentView(views.APIView):
             return Response({"detail": "Invalid Razorpay payment signature."}, status=status.HTTP_400_BAD_REQUEST)
 
         # Process successful payment
-        with transaction.atomic():
+        with transaction.atomic():  # type: ignore
             payment = Payment.objects.filter(booking=booking).order_by('-created_at').first()
             if not payment:
                 bill = getattr(booking, 'bill', None)
@@ -587,7 +599,6 @@ class VerifyOnlinePaymentView(views.APIView):
         # Notify admin of payment event
         channel_layer = get_channel_layer()
         if channel_layer:
-            from asgiref.sync import async_to_sync
             async_to_sync(channel_layer.group_send)(
                 "admin_updates",
                 {
@@ -600,7 +611,6 @@ class VerifyOnlinePaymentView(views.APIView):
             )
 
         # Send emails via existing SMTP system
-        from notifications.email_service import EmailNotificationService
         EmailNotificationService.send_payment_receipt_email(booking, payment)
         EmailNotificationService.send_captain_payment_confirmation_email(booking, payment)
 
@@ -629,7 +639,7 @@ class SelectCashPaymentView(views.APIView):
         receipt_number = f"REC-{booking.id}-{int(time.time())}"
 
         # Create or update Payment
-        payment, created = Payment.objects.update_or_create(
+        payment, _ = Payment.objects.update_or_create(
             booking=booking,
             defaults={
                 'customer': booking.customer,
@@ -664,7 +674,7 @@ class ConfirmCashPaymentView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, booking_id):
-        with transaction.atomic():
+        with transaction.atomic():  # type: ignore
             booking = Booking.objects.select_for_update().get(id=booking_id)
             if request.user.role != 'worker' or booking.worker != request.user:
                 return Response({"detail": "Access denied. Only the assigned captain can confirm cash payment."}, status=status.HTTP_403_FORBIDDEN)
@@ -709,7 +719,6 @@ class ConfirmCashPaymentView(views.APIView):
         # Notify admin
         channel_layer = get_channel_layer()
         if channel_layer:
-            from asgiref.sync import async_to_sync
             async_to_sync(channel_layer.group_send)(
                 "admin_updates",
                 {
@@ -777,8 +786,8 @@ class ProcessPaymentView(views.APIView):
         else:
             # mock payment receipt
             receipt_number = f"REC-{booking.id}-{int(time.time())}"
-            with transaction.atomic():
-                payment, created = Payment.objects.update_or_create(
+            with transaction.atomic():  # type: ignore
+                payment, _ = Payment.objects.update_or_create(
                     booking=booking,
                     defaults={
                         'customer': booking.customer,
@@ -812,7 +821,6 @@ class ProcessPaymentView(views.APIView):
                 notification_type="payment"
             )
 
-            from notifications.email_service import EmailNotificationService
             EmailNotificationService.send_payment_receipt_email(booking, payment)
             EmailNotificationService.send_captain_payment_confirmation_email(booking, payment)
 

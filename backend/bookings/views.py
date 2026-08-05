@@ -203,7 +203,7 @@ class BookingViewSet(viewsets.ModelViewSet):
         if not profile or not profile.online_status or profile.approval_status != 'approved':
             return Response({"detail": "You must be approved and online to accept jobs."}, status=status.HTTP_400_BAD_REQUEST)
         
-        from django.db import transaction
+        from rest_framework.exceptions import ValidationError, PermissionDenied, NotFound
         with transaction.atomic():  # type: ignore
             try:
                 booking = Booking.objects.select_for_update().get(pk=pk)
@@ -212,8 +212,9 @@ class BookingViewSet(viewsets.ModelViewSet):
 
             try:
                 validate_accept_booking(user, booking)
-            except Exception as ve:
-                pass
+            except (ValidationError, PermissionDenied, NotFound) as ve:
+                detail = ve.detail if hasattr(ve, 'detail') else str(ve)
+                return Response({"detail": detail}, status=status.HTTP_400_BAD_REQUEST)
 
             if booking.status != 'searching':
                 return Response({"detail": "This booking has already been assigned or cancelled."}, status=status.HTTP_400_BAD_REQUEST)
@@ -352,7 +353,7 @@ class BookingViewSet(viewsets.ModelViewSet):
 
                 # Payout Wallet Credit (90% payout)
                 worker_payout = (payment.amount * Decimal('0.90')).quantize(Decimal('0.01'))
-                wallet, _ = Wallet.objects.get_or_create(worker=booking.worker)
+                wallet, _ = Wallet.objects.select_for_update().get_or_create(worker=booking.worker)
                 wallet.current_balance += worker_payout
                 wallet.save()
 
