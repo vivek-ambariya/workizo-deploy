@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Box, Typography, Link, Container, Grid, Card, Button, Avatar, IconButton, Tooltip } from '@mui/material';
+import { Box, Typography, Link, Container, Grid, Card, Button, Avatar, IconButton, Tooltip, useMediaQuery } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import MouseIcon from '@mui/icons-material/Mouse';
@@ -34,8 +34,111 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 // Register GSAP ScrollTrigger
 gsap.registerPlugin(ScrollTrigger);
 
+const TOOL_ICONS = [
+  // Hammer
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="m15 12-8.5 8.5a2.12 2.12 0 0 1-3-3L12 9"/><path d="M17.64 6.36 16 8l3 3 1.64-1.64a2.12 2.12 0 0 0 0-3l-1-1a2.12 2.12 0 0 0-3 0Z"/><path d="M12.5 4.5 15 7"/></svg>,
+  // Wrench
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>,
+  // Screwdriver
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="m16.5 4.5 3 3-8 8H8.5v-3l8-8z"/><path d="m18 3 3 3"/><path d="m3 21 4.5-4.5"/></svg>,
+  // Drill
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M14 4h4v3h-4z"/><path d="M4 9h10v5H4z"/><path d="M6 14v6h4v-6"/><path d="M14 11h6v1h-6z"/><path d="M20 11.5 22 12l-2 .5z"/></svg>,
+  // Pliers
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="m4.5 16.5 4-4"/><path d="m2.5 18.5 6-6"/><path d="M12 9 6 3"/><path d="m15 12 6-6"/><path d="M11 13c1.5 1.5 3 3.5 3 6"/><path d="M13 11c1.5 1.5 3.5 3 6 3"/></svg>,
+  // Paint Roller
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="3" width="16" height="6" rx="2"/><path d="M10 9v4a2 2 0 0 0 2 2h4v5"/></svg>,
+  // Electric Bolt
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+  // Light Bulb
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1.55.62 2.96 1.63 4 .64.67 1.15 1.47 1.37 2.42"/></svg>,
+  // Plumbing Pipe
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 7h18M3 7v4M21 7v4M3 11h18M6 11v6a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3v-6"/></svg>,
+  // Gear
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
+  // Toolbox
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 10h16v10H4z"/><path d="M8 10V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v4"/><path d="M12 13v2"/></svg>
+];
+
+const TOOL_POSITIONS = [
+  { top: '10%', left: '8%', size: 30, dur: '6s', opacity: 0.12, rot: '3deg' },
+  { top: '18%', right: '10%', size: 34, dur: '8s', opacity: 0.1, rot: '-4deg' },
+  { top: '28%', right: '15%', size: 28, dur: '7s', opacity: 0.11, rot: '2deg' },
+  { top: '38%', left: '6%', size: 32, dur: '9s', opacity: 0.09, rot: '-3deg' },
+  { top: '48%', right: '8%', size: 30, dur: '6.5s', opacity: 0.13, rot: '4deg' },
+  { top: '60%', left: '10%', size: 36, dur: '7.5s', opacity: 0.1, rot: '-2deg' },
+  { top: '72%', right: '12%', size: 32, dur: '8.5s', opacity: 0.12, rot: '3deg' },
+  { top: '82%', left: '8%', size: 34, dur: '6.8s', opacity: 0.11, rot: '-5deg' },
+  { top: '92%', right: '10%', size: 30, dur: '7.2s', opacity: 0.09, rot: '2deg' },
+];
+
+const MobileBackgroundTools = () => (
+  <Box
+    sx={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100vw',
+      height: '100vh',
+      bgcolor: '#0B0B0B',
+      zIndex: 1,
+      pointerEvents: 'none',
+      overflow: 'hidden',
+    }}
+  >
+    {/* Soft radial background glow matching WORKIZO theme */}
+    <Box
+      sx={{
+        position: 'absolute',
+        top: '-15%',
+        left: '10%',
+        width: '80vw',
+        height: '80vw',
+        background: 'radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(30, 58, 138, 0.03) 55%, transparent 75%)',
+        filter: 'blur(50px)',
+      }}
+    />
+    <Box
+      sx={{
+        position: 'absolute',
+        bottom: '5%',
+        right: '5%',
+        width: '85vw',
+        height: '85vw',
+        background: 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(99, 102, 241, 0.03) 60%, transparent 80%)',
+        filter: 'blur(60px)',
+      }}
+    />
+
+    {/* Scattered Outline Service Tool Icons */}
+    {TOOL_POSITIONS.map((pos, idx) => (
+      <Box
+        key={idx}
+        sx={{
+          position: 'absolute',
+          top: pos.top,
+          left: pos.left,
+          right: pos.right,
+          width: pos.size,
+          height: pos.size,
+          color: 'rgba(255, 255, 255, 0.7)',
+          opacity: pos.opacity,
+          transform: `rotate(${pos.rot})`,
+          animation: `floatTool ${pos.dur} ease-in-out infinite`,
+          '& svg': {
+            width: '100%',
+            height: '100%',
+          }
+        }}
+      >
+        {TOOL_ICONS[idx % TOOL_ICONS.length]}
+      </Box>
+    ))}
+  </Box>
+);
+
 const SplineLanding = () => {
   const navigate = useNavigate();
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
 
   // Dynamic iframe pointer events state to solve trackpad & touch scroll hijacking
   const [iframePointerEvents, setIframePointerEvents] = useState('auto');
@@ -419,30 +522,33 @@ const SplineLanding = () => {
         )}
       </AnimatePresence>
 
-      {/* 1. Spline interactive background - FIXED to the screen */}
-      <iframe
-        src="https://my.spline.design/particles-YTBDLEkKYDerayq5gxeww7yv/"
-        frameBorder="0"
-        width="100%"
-        height="100%"
-        title="Spline Particles"
-        allow="autoplay; fullscreen"
-        style={{
-          border: 'none',
-          width: '100vw',
-          height: '100vh',
-          display: 'block',
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          zIndex: 1,
-          pointerEvents: iframePointerEvents, // Dynamically toggled on scrolling/swiping
-          transition: 'pointer-events 0.1s ease',
-        }}
-      />
+      {/* 1. Background Layer: Desktop (>=1024px) renders Spline 3D iframe; Tablet & Mobile (<1024px) renders lightweight MobileBackgroundTools (pure black #0B0B0B + outline service tool icons) */}
+      {isDesktop ? (
+        <iframe
+          src="https://my.spline.design/particles-YTBDLEkKYDerayq5gxeww7yv/"
+          frameBorder="0"
+          width="100%"
+          height="100%"
+          title="Spline Particles"
+          allow="autoplay; fullscreen"
+          style={{
+            border: 'none',
+            width: '100vw',
+            height: '100vh',
+            display: 'block',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            zIndex: 1,
+            pointerEvents: iframePointerEvents,
+            transition: 'pointer-events 0.1s ease',
+          }}
+        />
+      ) : (
+        <MobileBackgroundTools />
+      )}
 
-
-      {/* 2. Brand Overlay - Hero Fold (pointerEvents: none to let hover reach iframe) */}
+      {/* 2. Brand Overlay - Hero Fold */}
       <Box
         sx={{
           position: 'relative',
@@ -452,8 +558,8 @@ const SplineLanding = () => {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          p: { xs: 4, md: 8 },
-          pointerEvents: 'none', // Hover events bypass this layer to hit fixed iframe
+          p: { xs: 3, sm: 4, md: 8 },
+          pointerEvents: 'none',
           boxSizing: 'border-box',
         }}
       >
@@ -505,7 +611,7 @@ const SplineLanding = () => {
           <Box
             sx={{
               display: 'flex',
-              gap: { xs: 4, md: 8 },
+              gap: { xs: 3, md: 8 },
               pointerEvents: 'auto',
               textAlign: 'left',
             }}
@@ -577,7 +683,6 @@ const SplineLanding = () => {
                 WORKIZO
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-
                 <Link
                   onClick={() => navigate('/home')}
                   sx={{
@@ -609,24 +714,49 @@ const SplineLanding = () => {
             width: '100%',
           }}
         >
-          {/* Bottom Left: Huge Luxury serif title */}
+          {/* Bottom Left: Title */}
           <Box sx={{ maxWidth: '650px' }}>
             <Typography
               variant="h2"
               sx={{
                 fontFamily: "'Maltiner Display', Georgia, serif",
                 fontWeight: 400,
-                fontSize: { xs: '1.8rem', sm: '2.8rem', md: '3.6rem' },
+                fontSize: { xs: '2rem', sm: '2.8rem', md: '3.6rem' },
                 lineHeight: 1.15,
                 color: '#ffffff',
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
               }}
             >
-              One request,
-              <br />
-              one skilled solution.
+              {isDesktop ? (
+                <>
+                  One request,
+                  <br />
+                  one skilled solution.
+                </>
+              ) : (
+                <>
+                  The Smarter Way to
+                  <br />
+                  Book Home Services.
+                </>
+              )}
             </Typography>
+            {!isDesktop && (
+              <Typography
+                variant="body1"
+                sx={{
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  fontFamily: "'NewBlack', sans-serif",
+                  fontSize: { xs: '0.9rem', sm: '1rem' },
+                  lineHeight: 1.6,
+                  mt: 2,
+                  fontWeight: 400,
+                }}
+              >
+                Fast, Trusted, and Professional Home Services.
+              </Typography>
+            )}
           </Box>
 
           {/* Bottom Right: Go to Website link */}
