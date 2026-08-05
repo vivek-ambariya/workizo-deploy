@@ -85,12 +85,28 @@ const CustomerLogin = ({ defaultSignUp = false }) => {
       navigate('/customer/dashboard');
     } catch (err) {
       console.error(err);
-      if (err.email) {
-        toast.error(`Email: ${err.email[0]}`);
-      } else if (err.phone) {
-        toast.error(`Phone: ${err.phone[0]}`);
+      if (err && typeof err === 'object') {
+        if (err.email) {
+          toast.error(`Email: ${err.email[0]}`);
+        } else if (err.phone) {
+          toast.error(`Phone: ${err.phone[0]}`);
+        } else if (err.password) {
+          toast.error(`Password: ${err.password[0]}`);
+        } else if (err.non_field_errors) {
+          toast.error(err.non_field_errors[0]);
+        } else if (err.detail) {
+          toast.error(err.detail);
+        } else {
+          const firstKey = Object.keys(err)[0];
+          if (firstKey) {
+            const firstErr = Array.isArray(err[firstKey]) ? err[firstKey][0] : err[firstKey];
+            toast.error(`${firstKey}: ${firstErr}`);
+          } else {
+            toast.error('Registration failed. Please check inputs.');
+          }
+        }
       } else {
-        toast.error(err.detail || 'Registration failed. Please check inputs.');
+        toast.error('Registration failed. Please check inputs.');
       }
     } finally {
       setLoading(false);
