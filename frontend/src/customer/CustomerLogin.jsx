@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import { GoogleLogin } from '@react-oauth/google';
 import toast from 'react-hot-toast';
+import { tokens } from '../design/tokens';
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "1015380078872-icsaqkdfq5dhehn137rq0k0dhi4omepa.apps.googleusercontent.com";
 
 const CustomerLogin = ({ defaultSignUp = false }) => {
