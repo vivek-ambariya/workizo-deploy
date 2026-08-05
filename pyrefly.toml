@@ -1,5 +1,6 @@
 python-interpreter-path = "backend/venv/bin/python"
-search-path = ["backend"]
+search-path = ["backend", "backend/venv/lib/python3.13/site-packages"]
+
 
 [errors]
 missing-attribute = false
