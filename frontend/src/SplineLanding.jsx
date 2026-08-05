@@ -1,6 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Box, Typography, Link, Container, Grid, Card, Button, Avatar, IconButton, Tooltip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import MouseIcon from '@mui/icons-material/Mouse';
+import TouchAppIcon from '@mui/icons-material/TouchApp';
+import SouthIcon from '@mui/icons-material/South';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import StarsIcon from '@mui/icons-material/Stars';
@@ -37,10 +41,60 @@ const SplineLanding = () => {
   const [iframePointerEvents, setIframePointerEvents] = useState('auto');
   const scrollTimeoutRef = useRef(null);
 
+  // Intelligent Scroll Indicator State & References
+  const [showScrollIndicator, setShowScrollIndicator] = useState(false);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  const userInteractedRef = useRef(false);
+  const scrollTimerRef = useRef(null);
+
   // Slideshow state
   const [currentSlide, setCurrentSlide] = useState(0);
   const slideIntervalRef = useRef(null);
   const TOTAL_SLIDES = 10;
+
+  // Intelligent Scroll Indicator 5-second timer & auto-hide listeners
+  useEffect(() => {
+    const isMobile = window.innerWidth < 768 || 'ontouchstart' in window;
+    setIsMobileDevice(isMobile);
+
+    // 5-second timer to prompt user if no scroll or gesture has occurred
+    scrollTimerRef.current = setTimeout(() => {
+      if (!userInteractedRef.current && window.scrollY < 50) {
+        setShowScrollIndicator(true);
+      }
+    }, 5000);
+
+    const dismissIndicator = () => {
+      userInteractedRef.current = true;
+      setShowScrollIndicator(false);
+      if (scrollTimerRef.current) {
+        clearTimeout(scrollTimerRef.current);
+      }
+    };
+
+    const handleKeyDown = (e) => {
+      if (['PageDown', 'PageUp', 'ArrowDown', 'ArrowUp', 'Space', ' '].includes(e.key)) {
+        dismissIndicator();
+      }
+    };
+
+    window.addEventListener('scroll', dismissIndicator, { passive: true });
+    window.addEventListener('wheel', dismissIndicator, { passive: true });
+    window.addEventListener('touchstart', dismissIndicator, { passive: true });
+    window.addEventListener('touchmove', dismissIndicator, { passive: true });
+    window.addEventListener('keydown', handleKeyDown, { passive: true });
+
+    return () => {
+      if (scrollTimerRef.current) {
+        clearTimeout(scrollTimerRef.current);
+      }
+      window.removeEventListener('scroll', dismissIndicator);
+      window.removeEventListener('wheel', dismissIndicator);
+      window.removeEventListener('touchstart', dismissIndicator);
+      window.removeEventListener('touchmove', dismissIndicator);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   // Auto-advance slideshow every 4 seconds, loops
   useEffect(() => {
@@ -125,6 +179,14 @@ const SplineLanding = () => {
         font-weight: 800;
         font-style: normal;
         font-display: swap;
+      }
+      @keyframes indicatorFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(5px); }
+      }
+      @keyframes iconBounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(3px); }
       }
     `;
     document.head.appendChild(styleEl);
@@ -292,6 +354,71 @@ const SplineLanding = () => {
         bgcolor: '#090d16',
       }}
     >
+      {/* Intelligent Scroll Indicator Pill */}
+      <AnimatePresence>
+        {showScrollIndicator && (
+          <motion.div
+            initial={{ opacity: 0, y: -25, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -15, scale: 0.95 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              position: 'fixed',
+              top: '24px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 1000,
+              pointerEvents: 'none',
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.25,
+                px: 2.5,
+                py: 1,
+                borderRadius: '9999px',
+                background: 'rgba(15, 23, 42, 0.8)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+                border: '1px solid rgba(255, 255, 255, 0.18)',
+                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.35), 0 0 20px rgba(59, 130, 246, 0.25)',
+                animation: 'indicatorFloat 2.5s ease-in-out infinite',
+              }}
+            >
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: '#3b82f6',
+                  animation: 'iconBounce 2s ease-in-out infinite',
+                }}
+              >
+                {isMobileDevice ? (
+                  <TouchAppIcon sx={{ fontSize: 18 }} />
+                ) : (
+                  <MouseIcon sx={{ fontSize: 18 }} />
+                )}
+              </Box>
+              <Typography
+                sx={{
+                  fontFamily: "'NewBlack', -apple-system, sans-serif",
+                  fontWeight: 600,
+                  fontSize: { xs: '0.78rem', sm: '0.84rem' },
+                  letterSpacing: '0.04em',
+                  color: '#ffffff',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {isMobileDevice ? '👆 Swipe Up to Explore' : '🖱 Scroll Down to Explore'}
+              </Typography>
+              <SouthIcon sx={{ fontSize: 14, color: '#3b82f6', opacity: 0.9, ml: 0.2 }} />
+            </Box>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* 1. Spline interactive background - FIXED to the screen */}
       <iframe
         src="https://my.spline.design/particles-YTBDLEkKYDerayq5gxeww7yv/"
