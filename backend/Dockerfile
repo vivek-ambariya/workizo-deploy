@@ -6,16 +6,12 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install system dependencies needed for MySQL client, OpenCV, and EasyOCR
+# Install system dependencies needed for OpenCV and Postgres/PyMySQL
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    default-libmysqlclient-dev \
-    pkg-config \
-    libgl1-mesa-glx \
+    libpq-dev \
+    libgl1 \
     libglib2.0-0 \
-    libsm6 \
-    libxext6 \
-    libxrender-dev \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
