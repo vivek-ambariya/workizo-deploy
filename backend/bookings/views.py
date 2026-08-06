@@ -247,6 +247,12 @@ class BookingViewSet(viewsets.ModelViewSet):
             booking.status = 'accepted'
             booking.save()
 
+            # Set worker availability status to BUSY
+            profile = getattr(user, 'worker_profile', None)
+            if profile:
+                profile.availability_status = 'BUSY'
+                profile.save()
+
         # Send captain assigned email to customer
         from notifications.email_service import EmailNotificationService
         EmailNotificationService.send_captain_assigned_email(booking)
@@ -370,57 +376,66 @@ class BookingViewSet(viewsets.ModelViewSet):
                 if not payment or payment.status != 'PAID':
                     return Response({"detail": "Cannot complete job before payment has been verified."}, status=status.HTTP_400_BAD_REQUEST)
 
-                from decimal import Decimal
-                from workers.models import Wallet, WalletTransaction
-                from billing.views import compile_receipt_pdf
-                from notifications.email_service import EmailNotificationService
+                # Process wallet credit and receipt only if transition is new (prevent duplicate payouts)
+                if current_status != 'completed':
+                    from decimal import Decimal
+                    from workers.models import Wallet, WalletTransaction
+                    from billing.views import compile_receipt_pdf
+                    from notifications.email_service import EmailNotificationService
 
-                # Payout Wallet Credit (90% payout)
-                worker_payout = (payment.amount * Decimal('0.90')).quantize(Decimal('0.01'))
-                wallet, _ = Wallet.objects.select_for_update().get_or_create(worker=booking.worker)
-                wallet.current_balance += worker_payout
-                wallet.save()
+                    # Payout Wallet Credit (90% payout)
+                    worker_payout = (payment.amount * Decimal('0.90')).quantize(Decimal('0.01'))
+                    wallet, _ = Wallet.objects.select_for_update().get_or_create(worker=booking.worker)
+                    wallet.current_balance += worker_payout
+                    wallet.save()
 
-                # Payout transaction logging
-                WalletTransaction.objects.create(
-                    wallet=wallet,
-                    amount=worker_payout,
-                    transaction_type='credit',
-                    description=f"Earnings for Booking #{booking.id} ({booking.service_category.name})"
-                )
-
-                # Compile Receipt PDF
-                compile_receipt_pdf(payment)
-
-                # Send completion emails
-                try:
-                    EmailNotificationService.send_payment_receipt_email(booking, payment)
-                    EmailNotificationService.send_captain_payment_confirmation_email(booking, payment)
-                except Exception as e:
-                    print(f"Error sending emails on completion: {e}")
-
-                # Notify worker of payment deposit
-                create_and_send_notification(
-                    user=booking.worker,
-                    title="Earnings Deposited",
-                    message=f"₹{worker_payout} deposited to wallet for booking #{booking.id}.",
-                    notification_type="payment"
-                )
-
-                # Notify admin
-                channel_layer = get_channel_layer()
-                if channel_layer:
-                    from billing.serializers import PaymentSerializer
-                    async_to_sync(channel_layer.group_send)(
-                        "admin_updates",
-                        {
-                            "type": "send_notification",
-                            "data": {
-                                "type": "payment_update",
-                                "payment": PaymentSerializer(payment).data
-                            }
-                        }
+                    # Payout transaction logging
+                    WalletTransaction.objects.create(
+                        wallet=wallet,
+                        amount=worker_payout,
+                        transaction_type='credit',
+                        description=f"Earnings for Booking #{booking.id} ({booking.service_category.name})"
                     )
+
+                    # Compile Receipt PDF
+                    compile_receipt_pdf(payment)
+
+                    # Send completion emails
+                    try:
+                        EmailNotificationService.send_payment_receipt_email(booking, payment)
+                        EmailNotificationService.send_captain_payment_confirmation_email(booking, payment)
+                    except Exception as e:
+                        logger.error(f"Error sending emails on completion: {e}")
+
+                    # Notify worker of payment deposit
+                    create_and_send_notification(
+                        user=booking.worker,
+                        title="Earnings Deposited",
+                        message=f"₹{worker_payout} deposited to wallet for booking #{booking.id}.",
+                        notification_type="payment"
+                    )
+
+                    # Notify admin
+                    channel_layer = get_channel_layer()
+                    if channel_layer:
+                        from billing.serializers import PaymentSerializer
+                        async_to_sync(channel_layer.group_send)(
+                            "admin_updates",
+                            {
+                                "type": "send_notification",
+                                "data": {
+                                    "type": "payment_update",
+                                    "payment": PaymentSerializer(payment).data
+                                }
+                            }
+                        )
+
+            # Revert worker availability status to AVAILABLE upon completion or cancellation
+            if new_status in ['completed', 'cancelled'] and booking.worker:
+                wp = getattr(booking.worker, 'worker_profile', None)
+                if wp:
+                    wp.availability_status = 'AVAILABLE'
+                    wp.save()
 
             booking.status = new_status
             
@@ -599,8 +614,9 @@ class BookingViewSet(viewsets.ModelViewSet):
 
         token_number = request.data.get('token_number')
         if not token_number:
-            # Generate a new unique token
-            token_number = f"WRK-{1000 + booking.id}"
+            import time
+            # Generate a unique repair token
+            token_number = f"TKN-{booking.id}-{int(time.time())}"
 
         token, created = RepairToken.objects.get_or_create(
             booking=booking,

@@ -181,7 +181,6 @@ function WorkerDashboard() {
         pollingInterval.current = null;
       }
       if (notiWs.current) {
-        console.log('[WS] Closing connection because online status is false or user is not approved');
         notiWs.current.close();
         notiWs.current = null;
       }
@@ -191,7 +190,6 @@ function WorkerDashboard() {
       isActive = false;
       clearTimeout(reconnectTimer);
       if (socket) {
-        console.log('[WS] Cleaning up socket connection');
         socket.close();
       }
     };

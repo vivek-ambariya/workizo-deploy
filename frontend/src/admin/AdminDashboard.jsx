@@ -1635,7 +1635,6 @@ const PaymentsView = ({ hideHeader }) => {
       isActive = false;
       clearTimeout(reconnectTimer);
       if (socket) {
-        console.log('[WS] Cleaning up Admin socket connection');
         socket.close();
       }
     };

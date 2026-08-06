@@ -60,9 +60,6 @@ class RegisterView(APIView):
             user_data['profile'] = profile_data
             
             access_token = str(refresh.access_token)
-            print(f"\n================ [DEBUG] ACCESS TOKEN ({user.email}) ================")
-            print(access_token)
-            print("========================================================================\n")
             
             return Response({
                 'user': user_data,
@@ -264,9 +261,6 @@ class GoogleLoginView(APIView):
         user_data['profile'] = profile_data
 
         access_token = str(refresh.access_token)
-        print(f"\n================ [DEBUG] ACCESS TOKEN ({user.email}) ================")
-        print(access_token)
-        print("========================================================================\n")
 
         return Response({
             'user': user_data,

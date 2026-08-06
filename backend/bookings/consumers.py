@@ -1,8 +1,11 @@
 import json
+import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from bookings.models import Booking
 from validations import validate_socket_booking
+
+logger = logging.getLogger(__name__)
 
 @database_sync_to_async
 def is_authorized_for_booking(user, booking_id):
@@ -112,7 +115,7 @@ def save_chat_message(booking_id, sender_id, message_text):
             'message_type': msg.message_type
         }
     except Exception as e:
-        print("Error saving message:", e)
+        logger.error(f"Error saving message: {e}")
         return None
 
 @database_sync_to_async
@@ -121,7 +124,7 @@ def mark_messages_as_read(booking_id, user_id):
         updated = ChatMessage.objects.filter(booking_id=booking_id, receiver_id=user_id, is_read=False).update(is_read=True)
         return updated > 0
     except Exception as e:
-        print("Error marking messages read:", e)
+        logger.error(f"Error marking messages read: {e}")
         return False
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -218,7 +221,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         }
                     )
         except Exception as e:
-            print("ChatConsumer receive error:", e)
+            logger.error(f"ChatConsumer receive error: {e}")
 
     async def chat_message(self, event):
         # Send message to WebSocket

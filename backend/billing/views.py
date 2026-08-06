@@ -694,6 +694,9 @@ class ConfirmCashPaymentView(views.APIView):
             payment.cash_confirmation_timestamp = timezone.now()
             payment.save()
 
+            # Compile Receipt PDF
+            compile_receipt_pdf(payment)
+
             # Update Booking status
             booking.status = 'ready_to_complete'
             booking.save()
@@ -715,6 +718,13 @@ class ConfirmCashPaymentView(views.APIView):
             message=f"You confirmed cash payment of ₹{payment.amount}. You can now complete the job.",
             notification_type="payment"
         )
+
+        # Send emails via SMTP system
+        try:
+            EmailNotificationService.send_payment_receipt_email(booking, payment)
+            EmailNotificationService.send_captain_payment_confirmation_email(booking, payment)
+        except Exception as e:
+            pass
 
         # Notify admin
         channel_layer = get_channel_layer()

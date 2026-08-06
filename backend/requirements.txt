@@ -18,7 +18,10 @@ psycopg2-binary>=2.9.9
 whitenoise>=6.6.0
 PyMySQL>=1.1.0
 types-PyMySQL>=1.1.0
+types-channels
+types-reportlab
 reportlab>=4.0.0
+google-auth>=2.25.0
 
 
 

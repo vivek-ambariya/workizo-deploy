@@ -36,12 +36,9 @@ def send_html_email(subject, template_name, context, recipient_list, from_email=
         
         # Send email
         msg.send(fail_silently=False)
-        print(f"\n[EMAIL SUCCESS] Sent '{subject}' to {recipient_list}\n")
         logger.info("Successfully sent email '%s' to %s", subject, recipient_list)
         return True
 
     except Exception as e:
-        import sys
-        print(f"\n[EMAIL FAILURE] Failed sending '{subject}' to {recipient_list}: {str(e)}\n", file=sys.stderr)
         logger.exception("Error sending email '%s' to %s: %s", subject, recipient_list, str(e))
         return False

@@ -171,13 +171,21 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
 }
 
-# CORS Config
+# CORS & Security Config
 cors_origins = env('CORS_ALLOWED_ORIGINS', default='')
 if cors_origins:
     CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_origins.split(',')]
 else:
     CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+
+csrf_trusted = env.list('CSRF_TRUSTED_ORIGINS', default=[])
+if csrf_trusted:
+    CSRF_TRUSTED_ORIGINS = csrf_trusted
+elif cors_origins:
+    CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in cors_origins.split(',')]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
