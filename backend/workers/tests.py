@@ -50,8 +50,6 @@ class WorkerProfileRegistrationTest(TestCase):
             'pan_photo': pan_photo,
         }
         response = self.client.post('/api/workers/register-profile/', data, format='multipart')
-        print("TEST RESPONSE STATUS:", response.status_code)
-        print("TEST RESPONSE DATA:", response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         
         # Verify user fields are updated in database
